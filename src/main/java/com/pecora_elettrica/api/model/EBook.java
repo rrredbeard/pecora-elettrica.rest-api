@@ -2,6 +2,7 @@ package com.pecora_elettrica.api.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -11,17 +12,18 @@ import javax.persistence.*;
 public class EBook implements Serializable {
 
     @Id
-    @Column(name = "isbn")
+    @Column(name = "isbn", length = 17)
     private String isbn;
 
-    @Column(name = "title", nullable = false, updatable = false)
+    @Column(name = "title", length = 100, nullable = false, updatable = false)
     private String title;
-    @Column(name = "author", nullable = false, updatable = false)
+    @Column(name = "author", length = 50, nullable = false, updatable = false)
     private String author;
 
     @Column(name = "pages_no", nullable = false, updatable = false)
     private Long pagesNumber;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "publication", nullable = false, updatable = false)
     private Date publication;
 
@@ -36,7 +38,28 @@ public class EBook implements Serializable {
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private Set<EBookCopy> bookCopies;
 
-    /** getters */
+    /** setters **/
+    public void setISBN(String i) {
+        isbn = Utils.checkISBN(i);
+    }
+
+    public void setTitle(String t) {
+        title = t;
+    }
+
+    public void setAuthor(String a) {
+        author = a;
+    }
+
+    public void setPagesNumber(Long no) {
+        pagesNumber = Utils.checkUnsignedInteger(no);
+    }
+
+    public void setPreviousEdition(EBook book) {
+        previousEdition = book;
+    }
+
+    /** getters **/
     public String getISBN() {
         return isbn;
     }
@@ -71,15 +94,9 @@ public class EBook implements Serializable {
 
     /** utils */
 
-    EBook(String isbn) {
-        Utils.checkISBN(isbn);
-
-        this.isbn = isbn;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof EBook))
+        if (o == null || !(o instanceof EBook))
             return false;
 
         EBook ob = (EBook) o;
@@ -88,7 +105,7 @@ public class EBook implements Serializable {
 
     @Override
     public int hashCode() {
-        return isbn.hashCode();
+        return Objects.hash(isbn);
     }
 
     /** static */

@@ -1,0 +1,11 @@
+{
+	"configurations": [
+		{
+			"type": "java",
+			"name": "CodeLens (Launch) - PublicLibraryApplication",
+			"request": "launch",
+			"mainClass": "com.pecora_elettrica.api.PublicLibraryApplication",
+			"projectName": "api"
+		}
+	]
+}

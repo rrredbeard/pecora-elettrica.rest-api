@@ -34,6 +34,16 @@ public class EBookCopy implements Serializable {
         return book;
     }
 
+    /** setters **/
+
+    public void setKey(EBookCopy.PKey k) {
+        key = k;
+    }
+
+    public void setIsAvailable(Boolean ia) {
+        isAvailable = ia;
+    }
+
     /** static */
 
     private static final long serialVersionUID = 2L;
@@ -43,10 +53,10 @@ public class EBookCopy implements Serializable {
 
         private static final long serialVersionUID = 12L;
 
-        @Column(name = "book", nullable = false, updatable = false)
+        @Column(name = "book", length = 17, nullable = false, updatable = false)
         private String book;
 
-        @Column(name = "copy_no", nullable = false, updatable = false)
+        @Column(name = "copy_no", length = 4, nullable = false, updatable = false)
         private String copyNumber;
 
         /** getters */
@@ -59,15 +69,17 @@ public class EBookCopy implements Serializable {
             return copyNumber;
         }
 
-        /** utils */
+        /** setters **/
 
-        PKey(String isbn, String no) {
-            Utils.checkISBN(isbn);
-            Utils.checkFixedLength(4, no);
-
-            this.book = isbn;
-            this.copyNumber = no;
+        public void setBook(String isbn) {
+            book = Utils.checkISBN(isbn);
         }
+
+        public void setCopyNumber(String no) {
+            copyNumber = Utils.checkFixedLength(4, no);
+        }
+
+        /** utils */
 
         @Override
         public boolean equals(Object o) {
