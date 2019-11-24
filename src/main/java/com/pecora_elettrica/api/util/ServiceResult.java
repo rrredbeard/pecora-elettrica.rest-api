@@ -46,21 +46,23 @@ public abstract class ServiceResult<V> {
 		return ServiceResult.requireNotNull(mapper.apply((V) data));
 	}
 
-	/** *
-	public <T> ServiceResult<T> upgrade(Function<V, ServiceResult<T>> serviceMapper) {
-		Objects.requireNonNull(mapper);
-	
+	/** **/
+	@SuppressWarnings("unchecked")
+	public <T> ServiceResult<T> upgradeFromService(Function<V, ServiceResult<T>> serviceMapper) {
+		Objects.requireNonNull(serviceMapper);
+
 		if (isFailure())
 			return propagateFailure();
-	
-		return ServiceResult.requireNotNull(mapper.apply((V) data));
+
+		return serviceMapper.apply((V) data);
 	}
-	/** */
+
 	public ResponseEntity<?> toResponseEntity(HttpStatus success, HttpStatus failure) {
 
-		if (isFailure())
-			return ResponseEntity.status(failure).body(new ErrorDTO(this.getException().getMessage()));
-
+		if (isFailure()) {
+			ErrorDTO e = ErrorDTO.builder().error(this.getException().getMessage()).status(failure).build();
+			return ResponseEntity.status(failure).body(e);
+		}
 		return ResponseEntity.status(success).body(data);
 	}
 
@@ -83,7 +85,7 @@ public abstract class ServiceResult<V> {
 		return ((ServiceResult<V>) new ServiceResultFailure(ex));
 	}
 
-	/** utils  */
+	/** utils */
 
 	public static <V> ServiceResult<V> from(Optional<V> opt, Exception ex) {
 		Objects.requireNonNull(opt);
