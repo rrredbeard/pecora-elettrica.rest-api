@@ -5,94 +5,85 @@ import java.util.Objects;
 
 import javax.persistence.*;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
 @Entity
 @Table(name = "t_book_copy")
 public class EBookCopy implements Serializable {
 
+    /** static */
+    private static final long serialVersionUID = 80042067L;
+
+    /** instance **/
+
     @EmbeddedId
+    @Getter
+    @Setter
     private EBookCopy.PKey key;
 
     @Column(name = "is_available", nullable = false, updatable = true)
+    @Getter
+    @Setter
     private Boolean isAvailable;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("book")
     @JoinColumn(name = "book")
+    @Getter
     private EBook book;
 
-    /** getters */
+    /** utils */
 
-    public EBookCopy.PKey getKey() {
-        return key;
+    @Override
+    public int hashCode() {
+        return key.hashCode();
     }
 
-    public Boolean getIsAvailable() {
-        return isAvailable;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof EBookCopy))
+            return false;
+
+        EBookCopy obc = (EBookCopy) o;
+
+        return obc.key.equals(key);
     }
 
-    public EBook getBook() {
-        return book;
-    }
-
-    /** setters **/
-
-    public void setKey(EBookCopy.PKey k) {
-        key = k;
-    }
-
-    public void setIsAvailable(Boolean ia) {
-        isAvailable = ia;
-    }
-
-    /** static */
-
-    private static final long serialVersionUID = 2L;
-
+    /** PKEY **/
+    @Getter
+    @Setter
+    @NoArgsConstructor
     @Embeddable
     public static class PKey implements Serializable {
 
-        private static final long serialVersionUID = 12L;
+        /** static **/
+        private static final long serialVersionUID = 800420679437L;
 
+        /** instance **/
         @Column(name = "book", length = 17, nullable = false, updatable = false)
         private String book;
 
         @Column(name = "copy_no", length = 4, nullable = false, updatable = false)
         private String copyNumber;
 
-        /** getters */
-
-        public String getBook() {
-            return book;
-        }
-
-        public String getCopyNumber() {
-            return copyNumber;
-        }
-
-        /** setters **/
-
-        public void setBook(String isbn) {
-            book = Utils.checkISBN(isbn);
-        }
-
-        public void setCopyNumber(String no) {
-            copyNumber = Utils.checkFixedLength(4, no);
-        }
-
         /** utils */
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof EBookCopy.PKey))
-                return false;
-            EBookCopy.PKey ok = (EBookCopy.PKey) o;
-
-            return book.equals(ok.book) && copyNumber.equals(ok.copyNumber);
-        }
 
         @Override
         public int hashCode() {
             return Objects.hash(book, copyNumber);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || !(o instanceof EBookCopy.PKey))
+                return false;
+
+            EBookCopy.PKey opk = (PKey) o;
+
+            return book.equals(opk.book) && copyNumber.equals(opk.copyNumber);
         }
     }
 }
